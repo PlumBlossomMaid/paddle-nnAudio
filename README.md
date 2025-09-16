@@ -8,7 +8,7 @@ pip install git+https://github.com/PlumBlossomMaid/paddle-nnAudio.git
 ```
 或
 ```bash
-pip install paddle_nnAudio
+pip install paddle-nnAudio
 ```
 
 ## 快速开始

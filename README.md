@@ -4,11 +4,11 @@ paddle-nnAudio 是基于 PaddlePaddle 卷积神经网络作为后端的音频处
 
 ## 安装
 ```bash
-pip install git+https://github.com/PlumBlossomMaid/ppAudio.git
+pip install git+https://github.com/PlumBlossomMaid/paddle-nnAudio.git
 ```
 或
 ```bash
-pip install ppAudio
+pip install paddle_nnAudio
 ```
 
 ## 快速开始

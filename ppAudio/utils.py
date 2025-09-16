@@ -96,7 +96,7 @@ class ReflectionPad1d(_ReflectionPadNd):
                  [7., 6., 5., 4., 5., 6., 7., 6.]]])
     """
 
-    padding: tuple[int, int]
+    #padding: tuple[int, int] # python3.7不支持的语法，还是注释掉吧
 
     def __init__(self, padding) -> None:
         super().__init__()
@@ -495,7 +495,7 @@ def get_cqt_complex(x, cqt_kernels_real, cqt_kernels_imag, hop_length, padding):
 
         pad_size = cqt_kernels_real.shape[-1] // 2
         x = paddle.nn.functional.pad(
-            x, (pad_size, pad_size)  
+            x, (pad_size, pad_size), data_format="NCL"
         )
     
     # 计算实部和虚部的卷积
@@ -526,7 +526,7 @@ def get_cqt_complex2(
             UserWarning,
         )
         x = paddle.nn.functional.pad(
-            x, (cqt_kernels_real.shape[-1] // 2, cqt_kernels_real.shape[-1] // 2)
+            x, (cqt_kernels_real.shape[-1] // 2, cqt_kernels_real.shape[-1] // 2), data_format="NCL"
         )
 
     if wcos is None or wsin is None:

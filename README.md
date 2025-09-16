@@ -1,52 +1,43 @@
-# nnAudio
-nnAudio is an audio processing toolbox using PyTorch convolutional neural network as its backend. By doing so, spectrograms can be generated from audio on-the-fly during neural network training and the Fourier kernels (e.g. or CQT kernels) can be trained. Full details of nnAudio can be found in [our paper](https://ieeexplore.ieee.org/document/9174990). You can use nnAudio for free, however, if you use this library, please cite the paper as per the reference provided below. 
+# paddle-nnAudio
 
+paddle-nnAudio 是基于 PaddlePaddle 卷积神经网络作为后端的音频处理工具箱。通过这种方式， 梅尔频谱可以在神经网络训练过程中实时从音频生成，并且傅里叶核（如 CQT 核）可以被训练。paddle-nnAudio 移植自 [nnAudio](https://github.com/KinWaiCheuk/nnAudio)，旨在为 PaddlePaddle 生态提供类似的音频处理能力。
 
-[Kapre](https://github.com/keunwoochoi/kapre) has a similar concept in which they also use 1D convolutional neural network to extract spectrograms based on [Keras](https://keras.io). Other GPU audio processing tools are [torchaudio](https://github.com/pytorch/audio) and [tf.signal](https://www.tensorflow.org/api_docs/python/tf/signal). But they are not using a neural network approach, and hence the Fourier basis can not be trained. As of PyTorch 1.6.0, torchaudio is still very difficult to install under the Windows environment due to `sox`. nnAudio is a more compatible audio processing tool across different operating systems since it relies mostly on PyTorch convolutional neural network. The name of nnAudio comes from `torch.nn`
+## 安装
+```bash
+pip install git+https://github.com/你的用户名/paddle-nnAudio.git#subdirectory=Installation
+```
+或
+```bash
+pip install ppaudio
+```
 
-## Installation
-`pip install git+https://github.com/KinWaiCheuk/nnAudio.git#subdirectory=Installation`
+## 快速开始
+```python
+from ppAudio import features
+from scipy.io import wavfile
+import paddle
 
-or
+sr, song = wavfile.read('./Bach.wav')  # 加载音频
+x = song.mean(1)  # 将立体声转换为单声道
+x = paddle.to_tensor(x).cast('float32')  # 将数组转换为 PaddlePaddle Tensor
 
-`pip install nnAudio==0.3.1`
+# 初始化模型
+spec_layer = features.STFT(n_fft=2048, freq_bins=None, hop_length=512,
+                              window='hann', freq_scale='linear', center=True, pad_mode='reflect',
+                              fmin=50, fmax=11025, sr=sr)
 
-## Documentation
-https://kinwaicheuk.github.io/nnAudio/index.html
+spec = spec_layer(x)  # 将波形前向传播以获取 spectrogram
+```
 
-## Comparison with other libraries
-| Feature | [nnAudio](https://github.com/KinWaiCheuk/nnAudio) | [torch.stft](https://github.com/pytorch/pytorch/blob/master/aten/src/ATen/native/SpectralOps.cpp) | [kapre](https://github.com/keunwoochoi/kapre) | [torchaudio](https://github.com/pytorch/audio) | [tf.signal](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/python/ops/signal) | [torch-stft](https://github.com/pseeth/torch-stft) | [librosa](https://github.com/librosa/librosa) |
-| ------- | ------- | ---------- | ----- | ---------- | ---------------------------- | ---------- | ------- |
-| Trainable | ✅ | ❌| ✅ | ❌ | ❌ | ✅ | ❌ |
-| Differentiable | ✅  | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Linear frequency STFT| ✅  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Logarithmic frequency STFT| ✅  | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Inverse STFT| ✅  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Griffin-Lim| ✅  | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
-| Mel | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| MFCC | ✅  | ❌ | ❌ | ✅| ✅ | ❌ | ✅ |
-| CQT | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| VQT | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Gammatone | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| CFP<sup>1</sup> | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| GPU support | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
+## 依赖项
+- Numpy >= 1.14.5
+- Scipy >= 1.2.0
+- PaddlePaddle >= 2.0.0
+- Python >= 3.6
+- librosa = 0.7.0
 
-✅: Fully support    ☑️: Developing (only available in dev version)    ❌: Not support
-
-<sup>1</sup> [Combining Spectral and Temporal Representations for Multipitch Estimation of Polyphonic Music](https://ieeexplore.ieee.org/document/7118691)
-
-## News & Changelog
-To view the full changelog, please go to [CHANGELOG.md](CHANGELOG.md)
-
-**version 0.3.1** (24 Dec 2021):
-1. Added VQT feature [#113](/../../pull/113)
-
-**version 0.3.0** (19 Nov 2021):
-1. Changed module naming. `nnAudio.Spectrogram` will be replaced by `nnAudio.features` in the future releases. Currently, various spectrogram types are accessible via both methods.
-
-
-## Please cite nnAudio paper if you use it
-The paper describing the release of nnAudio is available on [IEEE Access](https://ieeexplore.ieee.org/document/9174990)
+## 引用
+如果您使用了 paddle-nnAudio，请引用原 nnAudio 的论文：
 
 K. W. Cheuk, H. Anderson, K. Agres and D. Herremans, "nnAudio: An on-the-Fly GPU Audio to Spectrogram Conversion Toolbox Using 1D Convolutional Neural Networks," in IEEE Access, vol. 8, pp. 161981-162003, 2020, doi: 10.1109/ACCESS.2020.3019084.
 
@@ -63,35 +54,5 @@ K. W. Cheuk, H. Anderson, K. Agres and D. Herremans, "nnAudio: An on-the-Fly GPU
   doi={10.1109/ACCESS.2020.3019084}}
 ```
 
-## Call for Contributions
-nnAudio is a fast-growing package. With the increasing number of feature requests, we welcome anyone who is familiar with digital signal processing and neural network to contribute to nnAudio. The current list of pending features includes:
-1. Invertible Constant Q Transform (CQT)
-
-
-(Quick tips for unit test: `cd` inside Installation folder, then type `pytest`. You need at least 1931 MiB GPU memory to pass all the unit tests)
-
-Alternatively, you may also contribute by:
-   1. Making a better demonstration code or tutorial
-
-
-
-
-## Dependencies
-Numpy >= 1.14.5
-
-Scipy >= 1.2.0
-
-PyTorch >= 1.6.0 (Griffin-Lim only available after 1.6.0)
-
-Python >= 3.6
-
-librosa = 0.7.0 (Theoretically nnAudio depends on librosa. But we only need to use a single function `mel` from `librosa.filters`. To save users troubles from installing librosa for this single function, I just copy the chunk of functions corresponding to `mel` in my code so that nnAudio runs without the need to install librosa)
-
-
-
-## Other similar libraries
-[Kapre](https://www.semanticscholar.org/paper/Kapre%3A-On-GPU-Audio-Preprocessing-Layers-for-a-of-Choi-Joo/b1ad5643e5dd66fac27067b00e5c814f177483ca?citingPapersSort=is-influential#citing-papers)
-
-[torch-stft](https://github.com/pseeth/torch-stft)
-
-
+## 许可证
+[MIT License](LICENSE)

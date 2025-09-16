@@ -4,35 +4,41 @@ paddle-nnAudio 是基于 PaddlePaddle 卷积神经网络作为后端的音频处
 
 ## 安装
 ```bash
-pip install git+https://github.com/你的用户名/paddle-nnAudio.git#subdirectory=Installation
+pip install git+https://github.com/PlumBlossomMaid/ppAudio.git
 ```
 或
 ```bash
-pip install ppaudio
+pip install ppAudio
 ```
 
 ## 快速开始
 ```python
-from ppAudio import features
-from scipy.io import wavfile
 import paddle
+import librosa
+import numpy as np
+from ppAudio.features import MelSpectrogram
 
-sr, song = wavfile.read('./Bach.wav')  # 加载音频
-x = song.mean(1)  # 将立体声转换为单声道
-x = paddle.to_tensor(x).cast('float32')  # 将数组转换为 PaddlePaddle Tensor
+def main() -> None:
+    paddle.device.set_device("gpu:0") # 使用gpu:0进行运算
+    example_y, example_sr = librosa.load(librosa.example('vibeace', hq=False)) # 加载音频
 
-# 初始化模型
-spec_layer = features.STFT(n_fft=2048, freq_bins=None, hop_length=512,
-                              window='hann', freq_scale='linear', center=True, pad_mode='reflect',
-                              fmin=50, fmax=11025, sr=sr)
+    n_fft, win_length = (512, 400)
+    melspec = MelSpectrogram(n_fft=n_fft, win_length=win_length, hop_length=512)
+    X = melspec(paddle.to_tensor(example_y).unsqueeze(0)).squeeze() # 将波形前向传播以获取 spectrogram
+    X_librosa = librosa.feature.melspectrogram(example_y, n_fft=n_fft, win_length=win_length, hop_length=512) # 设置对照
+    assert np.allclose(X.cpu(), X_librosa, rtol=1e-3, atol=1e-3) # 精度对齐
+    print("done")
 
-spec = spec_layer(x)  # 将波形前向传播以获取 spectrogram
+
+if __name__ == "__main__":
+    main()
+
 ```
 
 ## 依赖项
 - Numpy >= 1.14.5
 - Scipy >= 1.2.0
-- PaddlePaddle >= 2.0.0
+- PaddlePaddle >= 2.0.0 (或PaddlePaddle-gpu >= 2.0.0)
 - Python >= 3.6
 - librosa = 0.7.0
 

@@ -23,7 +23,7 @@ def get_version(rel_path):
 
 setuptools.setup(
     name="ppAudio",
-    version=get_version("nnAudio/__init__.py"),
+    version=get_version("ppAudio/__init__.py"),
     author="PlumBlossom",
     author_email="1589524335@qq.com",
     description="A fast GPU audio processing toolbox with 1D convolutional neural network",

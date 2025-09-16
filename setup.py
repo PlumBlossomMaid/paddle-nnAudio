@@ -22,7 +22,7 @@ def get_version(rel_path):
 
 
 setuptools.setup(
-    name="ppAudio",
+    name="paddle_nnAudio",
     version=get_version("ppAudio/__init__.py"),
     author="PlumBlossom",
     author_email="1589524335@qq.com",

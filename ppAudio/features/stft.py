@@ -280,7 +280,7 @@ class STFT(STFTBase):
                 padding = nn.ConstantPad1d(self.pad_amount, 0)
 
             elif self.pad_mode == "reflect":
-                if self.num_samples < self.pad_amount:
+                if (self.num_samples < self.pad_amount) and paddle.in_dynamic_mode():
                     raise AssertionError(
                         "Signal length shorter than reflect padding length (n_fft // 2)."
                     )

@@ -236,10 +236,10 @@ class STFT(STFTBase):
             self.register_buffer("wcos", wcos)
 
         if self.trainable == True:
-            wsin = nn.Parameter(wsin, requires_grad=self.trainable)
-            wcos = nn.Parameter(wcos, requires_grad=self.trainable)
-            self.register_parameter("wsin", wsin)
-            self.register_parameter("wcos", wcos)
+            wsin = paddle.create_parameter(wsin.shape, wsin.dtype, "wsin", default_initializer=paddle.nn.initializer.Assign(wsin))
+            wcos = paddle.create_parameter(wcos.shape, wcos.dtype, "wcos", default_initializer=paddle.nn.initializer.Assign(wcos))
+            self.add_parameter("wsin", wsin)
+            self.add_parameter("wcos", wcos)
 
             # Prepare the shape of window mask so that it can be used later in inverse
         self.register_buffer("window_mask", window_mask.unsqueeze(0).unsqueeze(-1))
